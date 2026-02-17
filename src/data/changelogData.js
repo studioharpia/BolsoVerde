@@ -15,6 +15,17 @@
 export const changelogEntries = [
     {
         date: "2026-02-17",
+        title: "Deploy Fullstack e UI Mobile",
+        type: "improvement",
+        items: [
+            { category: "Infra", text: "Transição para um modelo monorepo mais estável: o servidor agora serve o frontend diretamente pelo Node.js." },
+            { category: "Deploy", text: "Adicionados arquivos de configuração root (Dockerfile/Nixpacks) para garantir estabilidade no Coolify." },
+            { category: "UX", text: "Navbar totalmente redesenhada para celulares — menu agora empilha verticalmente com melhor usabilidade." },
+            { category: "Design", text: "O site agora possui um Favicon personalizado baseado na logo oficial do BolsoVerde." },
+        ],
+    },
+    {
+        date: "2026-02-17",
         title: "Feedback mais Robusto e Confiável",
         type: "improvement",
         items: [
