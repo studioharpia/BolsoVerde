@@ -15,6 +15,17 @@
 export const changelogEntries = [
     {
         date: "2026-02-17",
+        title: "Sistema de Feedback e Integração Real",
+        type: "feature",
+        items: [
+            { category: "Funcionalidade", text: "Novo sistema de feedback que captura print da tela automaticamente ao enviar." },
+            { category: "Backend", text: "Integração real com Resend via servidor focado em segurança e deploy em Docker." },
+            { category: "UX", text: "Validações inteligentes nos campos de e-mail e telefone com máscara brasileira." },
+            { category: "Interface", text: "Estados de erro dinâmicos com feedback visual em tempo real (red flags)." },
+        ],
+    },
+    {
+        date: "2026-02-17",
         title: "Segurança e Experiência de Importação",
         type: "improvement",
         items: [
