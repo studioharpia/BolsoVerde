@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Configuração para aceitar JSONs maiores (devido ao print da tela em base64)
