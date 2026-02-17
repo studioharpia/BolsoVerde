@@ -19,11 +19,12 @@ app.get('/health', (req, res) => {
 
 app.post('/api/send-feedback', async (req, res) => {
     const { name, phone, email, message, screenshot } = req.body;
+    console.log(`[${new Date().toISOString()}] Recebendo feedback de: ${name} (${email})`);
 
     try {
-        const data = await resend.emails.send({
-            from: 'BolsoVerde <onboarding@resend.dev>', // Ou seu domínio verificado
-            to: ['lukas@harpia.digital'],
+        const { data, error } = await resend.emails.send({
+            from: 'BolsoVerde <onboarding@resend.dev>',
+            to: ['lukas@pipple.com.br'],
             subject: `💰 BolsoVerde - Feedback #${Date.now()}`,
             html: `
         <div style="font-family: sans-serif; padding: 20px; color: #333;">
@@ -39,14 +40,20 @@ app.post('/api/send-feedback', async (req, res) => {
             attachments: screenshot ? [
                 {
                     filename: 'screenshot.jpg',
-                    content: screenshot.split(',')[1], // Remove o prefixo data:image/jpeg;base64,
+                    content: screenshot.split(',')[1],
                 }
             ] : []
         });
 
-        res.status(200).json({ success: true, id: data.id });
+        if (error) {
+            console.error(`[${new Date().toISOString()}] Erro retornado pelo Resend:`, error);
+            return res.status(400).json({ success: false, error: error.message });
+        }
+
+        console.log(`[${new Date().toISOString()}] E-mail enviado com sucesso! ID: ${data?.id}`);
+        res.status(200).json({ success: true, id: data?.id });
     } catch (error) {
-        console.error('Erro ao enviar e-mail:', error);
+        console.error(`[${new Date().toISOString()}] Erro crítico no Servidor:`, error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
