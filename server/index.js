@@ -27,18 +27,52 @@ app.post('/api/send-feedback', async (req, res) => {
 
     try {
         const { data, error } = await resend.emails.send({
-            from: 'BolsoVerde <onboarding@resend.dev>',
+            from: 'BolsoVerde <noreply@harpia.digital>',
             to: ['lukas@harpia.digital'],
             subject: `💰 BolsoVerde - Feedback #${Date.now()}`,
             html: `
-        <div style="font-family: sans-serif; padding: 20px; color: #333;">
-          <h1 style="color: #22c55e;">Novo Feedback Recebido! 🚀</h1>
-          <p><strong>Nome:</strong> ${name}</p>
-          <p><strong>WhatsApp:</strong> ${phone}</p>
-          <p><strong>E-mail:</strong> ${email}</p>
-          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-          <p><strong>Mensagem:</strong></p>
-          <p style="background: #f9f9f9; padding: 15px; border-radius: 8px;">${message}</p>
+        <div style="background-color: #fbfbfd; padding: 40px 20px; font-family: sans-serif; color: #020617;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 32px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                <!-- Header -->
+                <div style="background-color: #10b981; padding: 40px; text-align: center;">
+                    <div style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 100px; color: #ffffff; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;">
+                        Feedback Recebido 🚀
+                    </div>
+                    <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 900; letter-spacing: -1px;">BolsoVerde</h1>
+                </div>
+                
+                <!-- Content -->
+                <div style="padding: 40px;">
+                    <div style="margin-bottom: 30px;">
+                        <p style="font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #71717a; margin-bottom: 8px;">Remetente</p>
+                        <div style="background: #f1f5f9; padding: 20px; border-radius: 16px;">
+                            <p style="margin: 0; font-weight: 700; font-size: 16px;">${name}</p>
+                            <p style="margin: 4px 0 0; color: #71717a; font-size: 13px;">${email} • ${phone}</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <p style="font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #71717a; margin-bottom: 8px;">Mensagem</p>
+                        <div style="background: #f8fafc; border-left: 4px solid #10b981; padding: 24px; border-radius: 0 16px 16px 0; font-style: italic; color: #1e293b; line-height: 1.6; font-size: 16px;">
+                            "${message}"
+                        </div>
+                    </div>
+
+                    ${screenshot ? `
+                    <div style="margin-top: 40px; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden;">
+                        <p style="background: #f8fafc; padding: 12px 20px; margin: 0; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #71717a; border-bottom: 1px solid #e2e8f0;">Print da Tela</p>
+                        <img src="${screenshot}" style="width: 100%; display: block;" />
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <!-- Footer -->
+                <div style="padding: 40px; border-top: 1px solid #f1f5f9; text-align: center;">
+                    <p style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin: 0;">
+                        © 2026 BolsoVerde • Harpia.digital
+                    </p>
+                </div>
+            </div>
         </div>
       `,
             attachments: screenshot ? [
