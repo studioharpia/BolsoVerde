@@ -25,7 +25,8 @@ import { Label } from '../ui/Label'
 import { Badge } from '../ui/Badge'
 import { cn } from '../../services/utils'
 
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:3001')
+// Força path relativo em produção para evitar problemas com localhost/env vars
+const API_URL = import.meta.env.PROD ? '' : 'http://localhost:3001'
 const MAX_RETRIES = 3
 const RETRY_DELAY_MS = 1500
 
