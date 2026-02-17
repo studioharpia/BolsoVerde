@@ -167,6 +167,20 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                            <div className="flex justify-end -mt-4 mb-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({
+                                        name: 'Lukas Teste',
+                                        phone: '(11) 99999-9999',
+                                        email: 'lukas@harpia.digital',
+                                        message: 'Este é um teste rápido do sistema de feedback! 🚀'
+                                    })}
+                                    className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
+                                >
+                                    [ Preencher Teste ]
+                                </button>
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-[10px]">
                                     <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">

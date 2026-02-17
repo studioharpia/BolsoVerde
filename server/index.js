@@ -24,7 +24,7 @@ app.post('/api/send-feedback', async (req, res) => {
     try {
         const { data, error } = await resend.emails.send({
             from: 'BolsoVerde <onboarding@resend.dev>',
-            to: ['lukas@pipple.com.br'],
+            to: ['lukas@harpia.digital'],
             subject: `💰 BolsoVerde - Feedback #${Date.now()}`,
             html: `
         <div style="font-family: sans-serif; padding: 20px; color: #333;">
