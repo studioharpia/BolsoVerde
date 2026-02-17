@@ -25,7 +25,7 @@ import { Label } from '../ui/Label'
 import { Badge } from '../ui/Badge'
 import { cn } from '../../services/utils'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:3001')
 const MAX_RETRIES = 3
 const RETRY_DELAY_MS = 1500
 
@@ -121,6 +121,7 @@ export const FeedbackModal = ({ open, onOpenChange, screenshot }) => {
 
         setIsSubmitting(true)
 
+        console.log('[Feedback] Screenshot presente:', !!screenshot, screenshot ? `(${Math.round(screenshot.length / 1024)}KB)` : '')
         const result = await sendWithRetry({ ...formData, screenshot })
 
         if (result.success) {

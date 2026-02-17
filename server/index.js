@@ -10,6 +10,12 @@ const port = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Configuração para aceitar JSONs maiores (devido ao print da tela em base64)
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(cors({
     origin: '*',
@@ -17,9 +23,15 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../dist')));
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
 });
+
+// API routes above this...
+
 
 app.post('/api/send-feedback', async (req, res) => {
     const { name, phone, email, message, screenshot } = req.body;
@@ -100,6 +112,12 @@ app.post('/api/send-feedback', async (req, res) => {
         console.error(`[${new Date().toISOString()}] Erro crítico no Servidor:`, error);
         res.status(500).json({ success: false, error: error.message });
     }
+});
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 app.listen(port, () => {
