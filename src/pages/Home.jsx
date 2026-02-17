@@ -13,6 +13,25 @@ export default function Home() {
                     <p className="text-muted-foreground text-lg max-w-xl">
                         Acesse as principais áreas do projeto através dos módulos abaixo.
                     </p>
+                    <button
+                        onClick={() => {
+                            import('canvas-confetti').then(confetti => {
+                                confetti.default({
+                                    particleCount: 150,
+                                    spread: 70,
+                                    origin: { y: 0.6 },
+                                    colors: ['#3b82f6', '#8b5cf6', '#f97316', '#10b981']
+                                });
+                            });
+                            const audio = new Audio('https://www.soundjay.com/human/sounds/applause-01.mp3');
+                            audio.volume = 0.5;
+                            audio.play();
+                        }}
+                        className="mt-6 px-6 py-3 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary hover:text-primary-foreground transition-all flex items-center gap-2 group active:scale-95"
+                    >
+                        <Zap className="size-4 fill-current group-hover:animate-bounce" />
+                        Celebrar Lançamento
+                    </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
