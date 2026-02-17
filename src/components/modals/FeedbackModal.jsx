@@ -28,12 +28,34 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
     const [isSubmitting, setIsSubmitting] = React.useState(false)
     const [isSuccess, setIsSuccess] = React.useState(false)
     const [screenshot, setScreenshot] = React.useState(null)
+    const [errors, setErrors] = React.useState({})
     const [formData, setFormData] = React.useState({
         name: '',
         phone: '',
         email: '',
         message: ''
     })
+
+    // Mascara de Telefone BR: (XX) XXXXX-XXXX
+    const maskPhone = (value) => {
+        if (!value) return ""
+        value = value.replace(/\D/g, "")
+        value = value.replace(/(\d{2})(\d)/, "($1) $2")
+        value = value.replace(/(\d{5})(\d)/, "$1-$2")
+        return value.substring(0, 15)
+    }
+
+    // Validação de Email
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return re.test(email)
+    }
+
+    const handlePhoneChange = (e) => {
+        const maskedValue = maskPhone(e.target.value)
+        setFormData({ ...formData, phone: maskedValue })
+        if (errors.phone) setErrors({ ...errors, phone: false })
+    }
 
     // Captura o print automaticamente ao abrir o modal
     React.useEffect(() => {
@@ -44,6 +66,7 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
             setTimeout(() => {
                 setIsSuccess(false)
                 setScreenshot(null)
+                setErrors({})
                 setFormData({ name: '', phone: '', email: '', message: '' })
             }, 300)
         }
@@ -51,12 +74,9 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
 
     const captureScreen = async () => {
         try {
-            // Pequeno delay para garantir que o modal não apareça no print 
-            // ou que animações de entrada terminem (mas o modal já está abrindo)
-            // Escondemos o próprio modal do print usando um seletor se necessário
             const canvas = await html2canvas(document.body, {
                 ignoreElements: (element) => element.getAttribute('role') === 'dialog',
-                scale: 0.5, // Reduz tamanho para não pesar no e-mail
+                scale: 0.5,
                 logging: false,
                 useCORS: true
             })
@@ -68,28 +88,47 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        setIsSubmitting(true)
+
+        // Validações
+        const newErrors = {}
+        if (!formData.name.trim()) newErrors.name = true
+        if (formData.phone.length < 14) newErrors.phone = true
+        if (!validateEmail(formData.email)) newErrors.email = true
+        if (!formData.message.trim()) newErrors.message = true
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors)
+            return
+        }
 
         try {
-            // Simulação de envio para o e-mail lukas@harpia.digital
-            // Aqui futuramente chamaremos a Edge Function do Supabase
-            console.log('Enviando feedback para lukas@harpia.digital', {
-                ...formData,
-                hasScreenshot: !!screenshot
+            const api_url = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
+            const response = await fetch(`${api_url}/api/send-feedback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    screenshot
+                })
             })
 
-            // Simula delay de rede
-            await new Promise(resolve => setTimeout(resolve, 2000))
+            const result = await response.json()
 
-            setIsSuccess(true)
-
-            // Fecha o modal após 2 segundos de sucesso
-            setTimeout(() => {
-                onOpenChange(false)
-            }, 2000)
+            if (result.success) {
+                setIsSuccess(true)
+                setTimeout(() => {
+                    onOpenChange(false)
+                }, 2000)
+            } else {
+                throw new Error(result.error || 'Erro ao enviar feedback')
+            }
 
         } catch (error) {
             console.error('Erro ao enviar feedback:', error)
+            // Aqui poderíamos setar um erro global se necessário
         } finally {
             setIsSubmitting(false)
         }
@@ -127,63 +166,95 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
                     ) : (
                         <form onSubmit={handleSubmit} className="p-8 space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">Nome</Label>
+                                <div className="space-y-[10px]">
+                                    <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">
+                                        Nome <span className="text-destructive">*</span>
+                                    </Label>
                                     <div className="relative">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                                        <User className={cn("absolute left-4 top-1/2 -translate-y-1/2 size-4 transition-colors", errors.name ? "text-destructive" : "text-muted-foreground")} />
                                         <Input
                                             id="name"
-                                            required
                                             placeholder="Seu nome"
-                                            className="pl-12 bg-secondary/50 border-none rounded-2xl h-12 font-medium focus-visible:ring-primary"
+                                            className={cn(
+                                                "pl-12 rounded-2xl h-12 font-medium transition-all border",
+                                                errors.name
+                                                    ? "bg-destructive/10 border-destructive focus-visible:border-destructive animate-in shake-1"
+                                                    : "bg-secondary/50 border-border hover:border-primary focus-visible:border-primary focus-visible:animate-pulse-border"
+                                            )}
                                             value={formData.name}
-                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                            onChange={e => {
+                                                setFormData({ ...formData, name: e.target.value })
+                                                if (errors.name) setErrors({ ...errors, name: false })
+                                            }}
                                         />
                                     </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">Telefone</Label>
+                                <div className="space-y-[10px]">
+                                    <Label htmlFor="phone" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">
+                                        Telefone <span className="text-destructive">*</span>
+                                    </Label>
                                     <div className="relative">
-                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                                        <Phone className={cn("absolute left-4 top-1/2 -translate-y-1/2 size-4 transition-colors", errors.phone ? "text-destructive" : "text-muted-foreground")} />
                                         <Input
                                             id="phone"
-                                            required
                                             placeholder="(00) 00000-0000"
-                                            className="pl-12 bg-secondary/50 border-none rounded-2xl h-12 font-medium focus-visible:ring-primary"
+                                            className={cn(
+                                                "pl-12 rounded-2xl h-12 font-medium transition-all border",
+                                                errors.phone
+                                                    ? "bg-destructive/10 border-destructive focus-visible:border-destructive"
+                                                    : "bg-secondary/50 border-border hover:border-primary focus-visible:border-primary focus-visible:animate-pulse-border"
+                                            )}
                                             value={formData.phone}
-                                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                            onChange={handlePhoneChange}
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">E-mail</Label>
+                            <div className="space-y-[10px]">
+                                <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">
+                                    E-mail <span className="text-destructive">*</span>
+                                </Label>
                                 <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                                    <Mail className={cn("absolute left-4 top-1/2 -translate-y-1/2 size-4 transition-colors", errors.email ? "text-destructive" : "text-muted-foreground")} />
                                     <Input
                                         id="email"
-                                        type="email"
-                                        required
+                                        type="text"
                                         placeholder="seu@email.com"
-                                        className="pl-12 bg-secondary/50 border-none rounded-2xl h-12 font-medium focus-visible:ring-primary"
+                                        className={cn(
+                                            "pl-12 rounded-2xl h-12 font-medium transition-all border",
+                                            errors.email
+                                                ? "bg-destructive/10 border-destructive focus-visible:border-destructive"
+                                                : "bg-secondary/50 border-border hover:border-primary focus-visible:border-primary focus-visible:animate-pulse-border"
+                                        )}
                                         value={formData.email}
-                                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                        onChange={e => {
+                                            setFormData({ ...formData, email: e.target.value })
+                                            if (errors.email) setErrors({ ...errors, email: false })
+                                        }}
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="message" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">Mensagem</Label>
+                            <div className="space-y-[10px]">
+                                <Label htmlFor="message" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">
+                                    Mensagem <span className="text-destructive">*</span>
+                                </Label>
                                 <div className="relative">
-                                    <Type className="absolute left-4 top-4 size-4 text-muted-foreground" />
                                     <Textarea
                                         id="message"
-                                        required
                                         placeholder="Como podemos melhorar?"
-                                        className="pl-12 pt-3 bg-secondary/50 border-none rounded-3xl min-h-[120px] font-medium focus-visible:ring-primary resize-none"
+                                        className={cn(
+                                            "px-6 pt-3 rounded-3xl min-h-[120px] font-medium transition-all border resize-none focus-visible:ring-0",
+                                            errors.message
+                                                ? "bg-destructive/10 border-destructive focus-visible:border-destructive"
+                                                : "bg-secondary/50 border-border hover:border-primary focus-visible:border-primary focus-visible:animate-pulse-border"
+                                        )}
                                         value={formData.message}
-                                        onChange={e => setFormData({ ...formData, message: e.target.value })}
+                                        onChange={e => {
+                                            setFormData({ ...formData, message: e.target.value })
+                                            if (errors.message) setErrors({ ...errors, message: false })
+                                        }}
                                     />
                                 </div>
                             </div>
