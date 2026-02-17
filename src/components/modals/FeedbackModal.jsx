@@ -1,5 +1,4 @@
 import * as React from 'react'
-import html2canvas from 'html2canvas'
 import {
     MessageSquare,
     Camera,
@@ -9,7 +8,8 @@ import {
     User,
     Phone,
     Mail,
-    Type
+    AlertTriangle,
+    RefreshCw
 } from 'lucide-react'
 import {
     Dialog,
@@ -25,10 +25,50 @@ import { Label } from '../ui/Label'
 import { Badge } from '../ui/Badge'
 import { cn } from '../../services/utils'
 
-export const FeedbackModal = ({ open, onOpenChange }) => {
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const MAX_RETRIES = 3
+const RETRY_DELAY_MS = 1500
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms))
+
+const sendWithRetry = async (payload) => {
+    let lastError = null
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const controller = new AbortController()
+            const timeout = setTimeout(() => controller.abort(), 15000)
+
+            const response = await fetch(`${API_URL}/api/send-feedback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                signal: controller.signal
+            })
+
+            clearTimeout(timeout)
+
+            const result = await response.json()
+
+            if (result.success) return { success: true, id: result.id }
+
+            lastError = result.error || 'Erro ao enviar feedback'
+            if (attempt < MAX_RETRIES) await sleep(RETRY_DELAY_MS * attempt)
+        } catch (error) {
+            lastError = error.name === 'AbortError'
+                ? 'Servidor demorou para responder'
+                : error.message || 'Falha de conexão'
+            if (attempt < MAX_RETRIES) await sleep(RETRY_DELAY_MS * attempt)
+        }
+    }
+
+    return { success: false, error: lastError }
+}
+
+export const FeedbackModal = ({ open, onOpenChange, screenshot }) => {
     const [isSubmitting, setIsSubmitting] = React.useState(false)
     const [isSuccess, setIsSuccess] = React.useState(false)
-    const [screenshot, setScreenshot] = React.useState(null)
+    const [submitError, setSubmitError] = React.useState(null)
     const [errors, setErrors] = React.useState({})
     const [formData, setFormData] = React.useState({
         name: '',
@@ -37,7 +77,17 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
         message: ''
     })
 
-    // Mascara de Telefone BR: (XX) XXXXX-XXXX
+    React.useEffect(() => {
+        if (!open) {
+            setTimeout(() => {
+                setIsSuccess(false)
+                setSubmitError(null)
+                setErrors({})
+                setFormData({ name: '', phone: '', email: '', message: '' })
+            }, 300)
+        }
+    }, [open])
+
     const maskPhone = (value) => {
         if (!value) return ""
         value = value.replace(/\D/g, "")
@@ -46,11 +96,7 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
         return value.substring(0, 15)
     }
 
-    // Validação de Email
-    const validateEmail = (email) => {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        return re.test(email)
-    }
+    const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
     const handlePhoneChange = (e) => {
         const maskedValue = maskPhone(e.target.value)
@@ -58,39 +104,10 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
         if (errors.phone) setErrors({ ...errors, phone: false })
     }
 
-    // Captura o print automaticamente ao abrir o modal
-    React.useEffect(() => {
-        if (open) {
-            captureScreen()
-        } else {
-            // Reset ao fechar
-            setTimeout(() => {
-                setIsSuccess(false)
-                setScreenshot(null)
-                setErrors({})
-                setFormData({ name: '', phone: '', email: '', message: '' })
-            }, 300)
-        }
-    }, [open])
-
-    const captureScreen = async () => {
-        try {
-            const canvas = await html2canvas(document.body, {
-                ignoreElements: (element) => element.getAttribute('role') === 'dialog',
-                scale: 0.5,
-                logging: false,
-                useCORS: true
-            })
-            setScreenshot(canvas.toDataURL('image/jpeg', 0.8))
-        } catch (error) {
-            console.error('Erro ao capturar tela:', error)
-        }
-    }
-
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setSubmitError(null)
 
-        // Validações
         const newErrors = {}
         if (!formData.name.trim()) newErrors.name = true
         if (formData.phone.length < 14) newErrors.phone = true
@@ -104,44 +121,28 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
 
         setIsSubmitting(true)
 
-        try {
-            const api_url = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+        const result = await sendWithRetry({ ...formData, screenshot })
 
-            const response = await fetch(`${api_url}/api/send-feedback`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    screenshot
-                })
-            })
-
-            const result = await response.json()
-
-            if (result.success) {
-                setIsSuccess(true)
-                setTimeout(() => {
-                    onOpenChange(false)
-                }, 2000)
-            } else {
-                throw new Error(result.error || 'Erro ao enviar feedback')
-            }
-
-        } catch (error) {
-            console.error('Erro ao enviar feedback:', error)
-            alert(`Não foi possível enviar o feedback.\n\nDetalhe técnico: ${error.message}\n\nVerifique se o servidor na pasta 'server' está rodando (npm run dev).`)
-        } finally {
-            setIsSubmitting(false)
+        if (result.success) {
+            setIsSuccess(true)
+            setTimeout(() => onOpenChange(false), 2000)
+        } else {
+            setSubmitError(result.error)
         }
+
+        setIsSubmitting(false)
+    }
+
+    const handleRetry = () => {
+        setSubmitError(null)
+        handleSubmit(new Event('submit'))
     }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[500px] border-none bg-background/95 backdrop-blur-xl p-0 overflow-hidden rounded-[3rem] shadow-2xl">
                 <div className="relative">
-                    {/* Header Estilizado */}
+                    {/* Header */}
                     <div className="bg-primary p-8 text-primary-foreground relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 scale-150">
                             <MessageSquare size={120} />
@@ -168,6 +169,20 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="p-8 space-y-6">
+
+                            {submitError && (
+                                <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 flex items-start gap-3">
+                                    <AlertTriangle className="size-5 text-destructive shrink-0 mt-0.5" />
+                                    <div className="flex-1 space-y-1">
+                                        <p className="text-sm font-bold text-destructive">Falha ao enviar</p>
+                                        <p className="text-xs text-muted-foreground">{submitError}</p>
+                                        <p className="text-xs text-muted-foreground">Verifique se o servidor está rodando (<code className="bg-secondary px-1 rounded">npm run dev</code> na raiz do projeto).</p>
+                                    </div>
+                                    <button type="button" onClick={handleRetry} className="text-destructive hover:text-destructive/80 transition-colors">
+                                        <RefreshCw className="size-4" />
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-[10px]">

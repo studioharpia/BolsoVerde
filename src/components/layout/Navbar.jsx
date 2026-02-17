@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import html2canvas from 'html2canvas'
 import { Wallet, ArrowLeft, MessageSquarePlus } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { FeedbackModal } from '../modals/FeedbackModal'
@@ -8,6 +9,29 @@ export const Navbar = () => {
     const location = useLocation()
     const isHome = location.pathname === '/'
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
+    const [screenshot, setScreenshot] = useState(null)
+
+    const handleFeedbackClick = useCallback(async () => {
+        try {
+            const canvas = await html2canvas(document.body, {
+                scale: 0.5,
+                logging: false,
+                useCORS: true
+            })
+            setScreenshot(canvas.toDataURL('image/jpeg', 0.8))
+        } catch (err) {
+            console.error('Erro ao capturar tela:', err)
+            setScreenshot(null)
+        }
+        setIsFeedbackOpen(true)
+    }, [])
+
+    const handleModalClose = useCallback((open) => {
+        setIsFeedbackOpen(open)
+        if (!open) {
+            setTimeout(() => setScreenshot(null), 300)
+        }
+    }, [])
 
     return (
         <nav className="container mx-auto px-6 h-20 flex justify-between items-center relative z-50">
@@ -30,7 +54,7 @@ export const Navbar = () => {
                         </Link>
 
                         <Button
-                            onClick={() => setIsFeedbackOpen(true)}
+                            onClick={handleFeedbackClick}
                             className="rounded-full px-5 font-black text-xs uppercase tracking-widest bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 flex items-center gap-2 h-10"
                         >
                             <MessageSquarePlus className="size-4" />
@@ -50,7 +74,8 @@ export const Navbar = () => {
 
             <FeedbackModal
                 open={isFeedbackOpen}
-                onOpenChange={setIsFeedbackOpen}
+                onOpenChange={handleModalClose}
+                screenshot={screenshot}
             />
         </nav>
     )

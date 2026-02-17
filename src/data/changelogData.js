@@ -15,6 +15,16 @@
 export const changelogEntries = [
     {
         date: "2026-02-17",
+        title: "Feedback mais Robusto e Confiável",
+        type: "improvement",
+        items: [
+            { category: "Melhoria", text: "O sistema de feedback agora tenta enviar até 3 vezes automaticamente se houver falha de conexão." },
+            { category: "Correção", text: "O print da tela agora é capturado antes de abrir o formulário, garantindo que a imagem saia correta." },
+            { category: "UX", text: "Mensagens de erro mais claras e integradas ao design, com botão para tentar novamente." },
+        ],
+    },
+    {
+        date: "2026-02-17",
         title: "Sistema de Feedback e Integração Real",
         type: "feature",
         items: [
