@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, Palette, Zap, Server, Layout } from 'lucide-react'
+import { BookOpen, Palette, Zap, Server, Layout, Brain } from 'lucide-react'
 
 export default function Home() {
     return (
         <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
-            <div className="max-w-5xl w-full space-y-12">
+            <div className="max-w-6xl w-full space-y-12">
                 <div className="flex flex-col items-center text-center space-y-4">
                     <div className="size-16 rounded-2xl bg-primary flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
                         <Layout className="size-8 text-primary-foreground" />
@@ -15,7 +15,7 @@ export default function Home() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                     <Link to="/docs" className="group p-8 rounded-3xl border border-border bg-card hover:bg-accent hover:border-primary/20 transition-all space-y-4 flex flex-col items-center text-center">
                         <div className="size-14 rounded-2xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <BookOpen className="size-7 text-blue-500" />
@@ -33,6 +33,19 @@ export default function Home() {
                         <div>
                             <h3 className="text-xl font-bold group-hover:text-primary transition-colors">Styleguide</h3>
                             <p className="text-sm text-muted-foreground mt-2">Design system e componentes.</p>
+                        </div>
+                    </Link>
+
+                    <Link to="/skills" className="group p-8 rounded-3xl border border-border bg-card hover:bg-accent hover:border-primary/20 transition-all shadow-xl shadow-primary/5 ring-1 ring-primary/10 space-y-4 flex flex-col items-center text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-3">
+                            <div className="size-2 rounded-full bg-primary animate-pulse" />
+                        </div>
+                        <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Brain className="size-7 text-primary" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-bold group-hover:text-primary transition-colors">IA Nucleus</h3>
+                            <p className="text-sm text-muted-foreground mt-2">Capacidades e skills do Jarvis.</p>
                         </div>
                     </Link>
 

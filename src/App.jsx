@@ -14,12 +14,15 @@ import Style from './pages/docs/Style'
 import Security from './pages/docs/Security'
 import Status from './pages/Status'
 
+import Skills from './pages/Skills'
+
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/updates" element={<Updates />} />
       <Route path="/status" element={<Status />} />
+      <Route path="/skills" element={<Skills />} />
 
       {/* Documentation Routes */}
       <Route path="/docs" element={<DocsLayout />}>
