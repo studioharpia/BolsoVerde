@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowLeft, Home } from 'lucide-react'
 import { changelogEntries } from '../data/changelogData'
 import { Badge } from '../components/ui/Badge'
-import { Separator } from '../components/ui/Separator'
+import { Navbar } from '../components/layout/Navbar'
+import { Footer } from '../components/layout/Footer'
+import { HarpiaBanner } from '../components/layout/HarpiaBanner'
 
 const typeConfig = {
-    feature: { label: "Feature", variant: "default", color: "#3b82f6" }, // primary
+    feature: { label: "Feature", variant: "default", color: "#10b981" }, // emerald
     fix: { label: "Fix", variant: "destructive", color: "#ef4444" }, // destructive
-    improvement: { label: "Improvement", variant: "secondary", color: "#f59e0b" }, // warning/secondary
+    improvement: { label: "Improvement", variant: "secondary", color: "#3b82f6" }, // blue
     breaking: { label: "Breaking", variant: "outline", color: "#71717a" }, // neutral
 }
 
@@ -37,6 +37,10 @@ export default function Updates() {
     const itemRefs = useRef([])
 
     useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
+    useEffect(() => {
         const updateProgress = () => {
             if (!timelineRef.current) return
 
@@ -56,7 +60,6 @@ export default function Updates() {
             itemRefs.current.forEach((ref) => {
                 if (ref) {
                     const itemRect = ref.getBoundingClientRect()
-                    // If the item has passed the "scrolled head" (startOffset)
                     if (itemRect.top < startOffset) {
                         currentActiveColor = ref.dataset.color
                     }
@@ -72,113 +75,128 @@ export default function Updates() {
     }, [lineColor])
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container max-w-3xl mx-auto px-4 py-24">
-                {/* Intro */}
-                <section className="mb-20 text-center">
-                    <h1 className="text-5xl font-bold tracking-tight mb-4 text-foreground">
-                        Updates
-                    </h1>
-                    <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-                        Acompanhe em tempo real a evolução do ecossistema e novas funcionalidades.
-                    </p>
+        <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+            <header className="p-4 pb-0">
+                <HarpiaBanner />
+                <Navbar />
+            </header>
+
+            <main>
+                {/* Hero Section */}
+                <section className="container mx-auto px-4 py-12">
+                    <div className="bg-primary/5 rounded-[3.5rem] p-8 md:p-20 flex flex-col items-center text-center space-y-8 relative overflow-hidden border border-primary/10">
+                        <div className="absolute -top-24 -right-24 size-64 bg-primary/10 rounded-full blur-3xl opacity-20" />
+                        <div className="absolute -bottom-24 -left-24 size-64 bg-emerald-500/5 rounded-full blur-3xl opacity-20" />
+
+                        <div className="space-y-6 max-w-4xl relative z-10">
+                            <Badge className="rounded-full bg-primary/10 text-primary border-none px-4 py-1 font-bold text-xs uppercase tracking-widest">
+                                Evolução Contínua
+                            </Badge>
+                            <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[0.9] text-balance">
+                                Notas de <span className="text-primary italic">Atualização.</span>
+                            </h1>
+                            <p className="text-muted-foreground text-lg md:text-xl max-w-xl mx-auto leading-relaxed font-medium">
+                                Acompanhe todas as melhorias e novidades que preparamos para você dominar suas finanças.
+                            </p>
+                        </div>
+                    </div>
                 </section>
 
-                {/* Timeline Container */}
-                <div className="relative pl-8 sm:pl-0" ref={timelineRef}>
-                    {/* Background Line (Gray) */}
-                    <div className="absolute left-[7px] sm:left-[111px] top-2 bottom-4 w-[2px] bg-border rounded-full" />
+                <div className="container max-w-4xl mx-auto px-6 py-20">
+                    {/* Timeline Container */}
+                    <div className="relative pl-8 sm:pl-0" ref={timelineRef}>
+                        {/* Background Line */}
+                        <div className="absolute left-[7px] sm:left-[111px] top-2 bottom-4 w-[2px] bg-border/50 rounded-full" />
 
-                    {/* Progress Line - Color matches current dot */}
-                    <div
-                        className="absolute left-[7px] sm:left-[111px] top-2 w-[2px] rounded-full transition-all duration-300 ease-out z-20"
-                        style={{
-                            height: `${progress * 100}%`,
-                            maxHeight: 'calc(100% - 16px)',
-                            backgroundColor: lineColor
-                        }}
-                    />
+                        {/* Progress Line */}
+                        <div
+                            className="absolute left-[7px] sm:left-[111px] top-2 w-[2px] rounded-full transition-all duration-300 ease-out z-20"
+                            style={{
+                                height: `${progress * 100}%`,
+                                maxHeight: 'calc(100% - 16px)',
+                                backgroundColor: lineColor
+                            }}
+                        />
 
-                    {sortedDates.map((date, dateIndex) => (
-                        <div key={date} className="relative mb-16 last:mb-0">
-                            {/* Date Label */}
-                            <div className="sm:absolute sm:-left-44 sm:w-40 flex flex-col items-start sm:items-end pt-1 mb-4 sm:mb-0 text-foreground">
-                                <span className="text-xs font-bold tabular-nums uppercase tracking-widest opacity-40 whitespace-nowrap">
-                                    {formatDate(date)}
-                                </span>
-                            </div>
+                        {sortedDates.map((date) => (
+                            <div key={date} className="relative mb-24 last:mb-0">
+                                {/* Date Label */}
+                                <div className="sm:absolute sm:-left-44 sm:w-40 flex flex-col items-start sm:items-end pt-1 mb-6 sm:mb-0 text-foreground">
+                                    <span className="text-xs font-black tabular-nums uppercase tracking-[0.2em] opacity-30 whitespace-nowrap">
+                                        {formatDate(date)}
+                                    </span>
+                                </div>
 
-                            {/* Entries for this date */}
-                            <div className="space-y-10">
-                                {groupedEntries[date].map((entry, entryIndex) => {
-                                    const config = typeConfig[entry.type] || typeConfig.feature
-                                    // Calculate global index for refs
-                                    const globalIndex = changelogEntries.findIndex(e => e === entry)
+                                {/* Entries for this date */}
+                                <div className="space-y-16">
+                                    {groupedEntries[date].map((entry, entryIndex) => {
+                                        const config = typeConfig[entry.type] || typeConfig.feature
+                                        const globalIndex = changelogEntries.findIndex(e => e === entry)
 
-                                    return (
-                                        <div
-                                            key={entryIndex}
-                                            className="relative pl-4 sm:pl-36 group"
-                                            ref={el => itemRefs.current[globalIndex] = el}
-                                            data-color={config.color}
-                                        >
-                                            {/* Dot on the timeline */}
-                                            <div className="absolute left-[-29px] sm:left-[106px] top-1.5 z-30">
-                                                <div
-                                                    className="size-3 rounded-full ring-4 ring-background transition-colors duration-300"
-                                                    style={{ backgroundColor: config.color }}
-                                                />
-                                            </div>
-
-                                            {/* Content Card */}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-3 mb-3">
-                                                    <h2 className="text-xl font-semibold text-foreground leading-tight">
-                                                        {entry.title}
-                                                    </h2>
-                                                    <Badge variant={config.variant} className="text-[10px] h-5 shrink-0">
-                                                        {config.label}
-                                                    </Badge>
+                                        return (
+                                            <div
+                                                key={entryIndex}
+                                                className="relative pl-4 sm:pl-36 group"
+                                                ref={el => itemRefs.current[globalIndex] = el}
+                                                data-color={config.color}
+                                            >
+                                                {/* Dot on the timeline */}
+                                                <div className="absolute left-[-29px] sm:left-[106px] top-1.5 z-30">
+                                                    <div
+                                                        className="size-3 rounded-full ring-8 ring-background transition-colors duration-500 shadow-sm"
+                                                        style={{ backgroundColor: config.color }}
+                                                    />
                                                 </div>
 
-                                                {/* Group items by category */}
-                                                {Object.entries(
-                                                    entry.items.reduce((acc, item) => {
-                                                        if (!acc[item.category]) acc[item.category] = []
-                                                        acc[item.category].push(item.text)
-                                                        return acc
-                                                    }, {})
-                                                ).map(([category, texts]) => (
-                                                    <div key={category} className="mb-4 last:mb-0">
-                                                        <p className="text-sm font-bold text-foreground/80 mb-2">
-                                                            {category}
-                                                        </p>
-                                                        <ul className="space-y-2">
-                                                            {texts.map((text, i) => (
-                                                                <li key={i} className="flex items-start gap-2.5 text-sm text-muted-foreground leading-relaxed">
-                                                                    <span className="mt-2 size-1.5 rounded-full bg-border shrink-0" />
-                                                                    <span>{text}</span>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
+                                                {/* Content Card */}
+                                                <div className="flex-1 min-w-0 bg-card/40 backdrop-blur-sm border border-border/50 rounded-[2rem] p-8 hover:bg-card/60 transition-colors shadow-sm">
+                                                    <div className="flex flex-wrap items-center gap-3 mb-6">
+                                                        <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight">
+                                                            {entry.title}
+                                                        </h2>
+                                                        <Badge variant={config.variant} className="text-[10px] font-black uppercase tracking-widest px-3 h-5 shrink-0 border-none shadow-sm" style={{ backgroundColor: config.variant === 'default' ? config.color : undefined }}>
+                                                            {config.label}
+                                                        </Badge>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </div>
-                    ))}
-                </div>
 
-                {/* Footer */}
-                <div className="mt-32 pt-16 border-t border-border/50 text-center">
-                    <p className="text-sm text-muted-foreground">
-                        BolsoVerde — Calculadora de Gastos Inteligente
-                    </p>
+                                                    {/* Group items by category */}
+                                                    {Object.entries(
+                                                        entry.items.reduce((acc, item) => {
+                                                            if (!acc[item.category]) acc[item.category] = []
+                                                            acc[item.category].push(item.text)
+                                                            return acc
+                                                        }, {})
+                                                    ).map(([category, texts]) => (
+                                                        <div key={category} className="mb-6 last:mb-0">
+                                                            <div className="flex items-center gap-2 mb-3">
+                                                                <span className="size-1.5 rounded-full bg-primary" />
+                                                                <p className="text-xs font-black uppercase tracking-widest text-primary/80">
+                                                                    {category}
+                                                                </p>
+                                                            </div>
+                                                            <ul className="space-y-3">
+                                                                {texts.map((text, i) => (
+                                                                    <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground leading-relaxed font-medium">
+                                                                        <span className="mt-2.5 size-1 rounded-full bg-border shrink-0" />
+                                                                        <span>{text}</span>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            </main>
+
+            <Footer />
         </div>
     )
 }
+

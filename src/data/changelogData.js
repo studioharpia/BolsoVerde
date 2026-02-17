@@ -15,6 +15,18 @@
 export const changelogEntries = [
     {
         date: "2026-02-17",
+        title: "Segurança e Experiência de Importação",
+        type: "improvement",
+        items: [
+            { category: "Funcionalidade", text: "Processamento automático ao selecionar arquivo — removido botão redundante." },
+            { category: "Segurança", text: "Implementada trava de 20MB para uploads, garantindo performance e integridade." },
+            { category: "UX", text: "Feedbacks de erro agora integrados ao Design System com alertas visuais destacados." },
+            { category: "Novidade", text: "Novo banner promocional da Harpia Digital integrado de forma fluida ao topo do site." },
+            { category: "Correção", text: "Correção no bug que impedia múltiplos uploads seguidos do mesmo extrato." },
+        ],
+    },
+    {
+        date: "2026-02-17",
         title: "Categorização Inteligente 2.0",
         type: "feature",
         items: [

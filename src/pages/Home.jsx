@@ -1,18 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import {
     Upload,
     PieChart as PieIcon,
     BarChart3,
     ShieldCheck,
     Zap,
-    TrendingUp,
-    Wallet,
     Trash2,
     RefreshCw,
-    Star,
-    ArrowUpRight,
-    Users,
     Activity,
     Lock,
     CalendarDays,
@@ -33,34 +27,20 @@ import {
 import { ChartContainer } from '../components/ui/Chart'
 import { parseFile } from '../services/fileParser'
 import { summarizeData } from '../services/categorizer'
+import { Navbar } from '../components/layout/Navbar'
+import { Footer } from '../components/layout/Footer'
+import { HarpiaBanner } from '../components/layout/HarpiaBanner'
+import { Alert, AlertTitle, AlertDescription } from '../components/ui/Alert'
+import { AlertCircle } from 'lucide-react'
 
 const formatBRL = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 
-const Navbar = ({ reset }) => (
-    <nav className="container mx-auto px-6 h-20 flex justify-between items-center absolute top-0 left-0 right-0 z-50">
-        <div className="flex items-center gap-2 font-black text-2xl tracking-tighter">
-            <div className="size-8 rounded-lg bg-primary flex items-center justify-center">
-                <Wallet className="size-5 text-primary-foreground" />
-            </div>
-            BolsoVerde
-        </div>
-        <div className="hidden md:flex gap-8 text-sm font-bold text-muted-foreground">
-            <Link to="/updates" className="hover:text-primary transition-colors">Updates</Link>
-        </div>
-        <div className="flex items-center gap-4">
-            <Button variant="ghost" className="rounded-full px-6 font-bold" onClick={reset}>
-                Novo Cálculo
-            </Button>
-            <Button variant="outline" className="rounded-full px-6 font-bold border-2" onClick={() => window.location.href = '#'}>
-                Como Funciona
-            </Button>
-        </div>
-    </nav>
-)
+
 
 export default function Home() {
     const [status, setStatus] = useState('initial')
     const [fileName, setFileName] = useState('')
+    const [error, setError] = useState(null)
     const [dashboardData, setDashboardData] = useState({
         transactions: [],
         pieData: [],
@@ -83,6 +63,15 @@ export default function Home() {
     const handleFileUpload = async (e) => {
         const file = e.target.files[0]
         if (file) {
+            setError(null)
+
+            // Limite de 20MB
+            if (file.size > 20 * 1024 * 1024) {
+                setError("O arquivo é muito grande! O limite máximo é de 20MB.")
+                e.target.value = '' // Limpa o input para permitir nova seleção
+                return
+            }
+
             setFileName(file.name)
             setStatus('processing')
 
@@ -93,11 +82,13 @@ export default function Home() {
                 setTimeout(() => {
                     setDashboardData(summary)
                     setStatus('completed')
+                    e.target.value = '' // Limpa o input após sucesso para permitir re-upload
                 }, 1500)
             } catch (error) {
                 console.error("Erro ao processar arquivo:", error)
-                alert("Ops! Não conseguimos ler este arquivo.")
+                setError("Ops! Não conseguimos ler este arquivo. Verifique se é um CSV válido.")
                 setStatus('initial')
+                e.target.value = '' // Limpa o input em caso de erro
             }
         }
     }
@@ -105,13 +96,17 @@ export default function Home() {
     const reset = () => {
         setStatus('initial')
         setFileName('')
+        setError(null)
     }
 
     return (
         <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-            <Navbar reset={reset} />
+            <header className="p-4 pb-0">
+                <HarpiaBanner />
+                <Navbar />
+            </header>
 
-            <main className="pt-20">
+            <main>
                 {/* Hero Section */}
                 <section className="container mx-auto px-4 py-12">
                     <div className="bg-primary/5 rounded-[3.5rem] p-8 md:p-20 flex flex-col items-center text-center space-y-12 relative overflow-hidden border border-primary/10">
@@ -131,38 +126,54 @@ export default function Home() {
                             </p>
                         </div>
 
-                        {/* Upload Area */}
-                        <div className="w-full max-w-xl relative group z-10 scale-100 hover:scale-[1.02] transition-transform duration-500">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                            <div className="relative bg-background rounded-[2.5rem] p-4 flex flex-col md:flex-row items-center gap-4 shadow-2xl border border-border">
-                                <div className="flex-1 w-full relative">
-                                    <input
-                                        type="file"
-                                        accept=".csv,.pdf"
-                                        onChange={handleFileUpload}
-                                        className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                                    />
-                                    <div className="flex items-center gap-4 p-4 rounded-3xl bg-secondary/50 border border-dashed border-border group-hover:border-primary/50 transition-colors">
-                                        <div className="size-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20">
-                                            <Upload className="size-6" />
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="font-bold text-foreground">Importar Extrato</p>
-                                            <p className="text-xs text-muted-foreground">Arraste seu CSV ou PDF aqui</p>
+                        {/* Upload Card */}
+                        <div className="w-full max-w-xl relative group z-10">
+                            <div className="relative group scale-100 hover:scale-[1.02] transition-transform duration-500">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                                <div className="relative bg-background rounded-[2.5rem] p-4 flex flex-col items-center gap-4 shadow-2xl border border-border">
+                                    <div className="w-full relative">
+                                        <input
+                                            type="file"
+                                            accept=".csv"
+                                            onChange={handleFileUpload}
+                                            className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                        />
+                                        <div className="flex items-center gap-4 p-4 rounded-3xl bg-secondary/50 border border-dashed border-border group-hover:border-primary/50 transition-colors">
+                                            <div className="size-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20">
+                                                <Upload className="size-6" />
+                                            </div>
+                                            <div className="text-left flex-1">
+                                                <p className="font-bold text-foreground">Importar Extrato</p>
+                                                <p className="text-xs text-muted-foreground italic">Arraste seu CSV aqui (Apenas CSV)</p>
+                                            </div>
                                         </div>
                                     </div>
+                                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest opacity-60">Tamanho máximo permitido: 20MB</p>
                                 </div>
-                                <Button className="w-full md:w-auto h-16 px-10 rounded-3xl font-black text-lg gap-2 shadow-xl shadow-primary/20">
-                                    Analisar Grátis <ArrowUpRight className="size-5" />
-                                </Button>
                             </div>
                         </div>
+
+                        {/* Alerta de Erro - Fora do Card Branco */}
+                        {error && (
+                            <div className="w-full max-w-xl animate-in fade-in slide-in-from-top-4 duration-500 z-10">
+                                <Alert variant="destructive" className="rounded-[2.5rem] border-destructive/30 bg-destructive/15 backdrop-blur-md shadow-2xl shadow-destructive/10 overflow-hidden">
+                                    <div className="flex items-start gap-4">
+                                        <AlertCircle className="size-6 text-destructive shrink-0 mt-0.5" />
+                                        <div className="text-left space-y-1">
+                                            <AlertTitle className="font-black text-lg tracking-tight leading-none">Erro no Processamento</AlertTitle>
+                                            <AlertDescription className="text-sm font-medium leading-tight">
+                                                {error}
+                                            </AlertDescription>
+                                        </div>
+                                    </div>
+                                </Alert>
+                            </div>
+                        )}
 
                         {/* Trust Badges */}
                         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
                             <div className="flex items-center gap-2 font-bold text-xl tracking-tighter"><ShieldCheck className="size-6" /> Segurança Bancária</div>
                             <div className="flex items-center gap-2 font-bold text-xl tracking-tighter"><Lock className="size-6" /> 100% Privado</div>
-                            <div className="flex items-center gap-2 font-bold text-xl tracking-tighter underline">Open Finance Ready</div>
                         </div>
                     </div>
                 </section>
@@ -362,16 +373,16 @@ export default function Home() {
                 <section className="container mx-auto px-6 py-20">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
                         {[
-                            { label: "Usuários Ativos", val: "+50k", icon: Users },
-                            { label: "Gastos Analisados", val: "R$ 15M+", icon: Activity },
-                            { label: "Economia Gerada", val: "22%", icon: TrendingUp },
-                            { label: "Avaliação App", val: "4.9/5", icon: Star },
+                            { label: "Privacidade", val: "100% Offline", icon: ShieldCheck },
+                            { label: "Categorizador", val: "IA Nacional", icon: Zap },
+                            { label: "Acesso Rápido", val: "Zero Cadastro", icon: Activity },
+                            { label: "Segurança", val: "Open Format", icon: Lock },
                         ].map((stat, i) => (
                             <div key={i} className="flex flex-col items-center text-center space-y-2 group">
-                                <div className="size-12 rounded-2xl bg-secondary flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                <div className="size-12 rounded-2xl bg-secondary flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
                                     <stat.icon className="size-6" />
                                 </div>
-                                <div className="text-3xl font-black tracking-tighter">{stat.val}</div>
+                                <div className="text-2xl font-black tracking-tighter">{stat.val}</div>
                                 <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-50">{stat.label}</div>
                             </div>
                         ))}
@@ -409,30 +420,21 @@ export default function Home() {
                         <div className="absolute top-0 right-0 size-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                         <h2 className="text-4xl md:text-7xl font-black tracking-tight leading-tight">Comece a economizar <br />hoje mesmo.</h2>
                         <p className="text-primary-foreground/80 text-xl font-medium max-w-xl mx-auto">
-                            Junte-se a milhares de pessoas que já transformaram sua relação com o dinheiro.
+                            Transforme sua relação com o dinheiro usando tecnologia de ponta e privacidade total.
                         </p>
                         <div className="flex flex-col md:flex-row gap-4 justify-center pt-4 relative z-10">
-                            <Button className="bg-white text-primary hover:bg-white/90 h-16 px-12 rounded-full font-black text-lg shadow-2xl">
+                            <Button
+                                className="bg-white text-primary hover:bg-white/90 h-16 px-12 rounded-full font-black text-lg shadow-2xl"
+                                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                            >
                                 Analisar meu CSV agora
-                            </Button>
-                            <Button variant="outline" className="border-white/20 hover:bg-white/10 h-16 px-12 rounded-full font-bold text-lg text-white">
-                                Ver Tutorial
                             </Button>
                         </div>
                     </div>
                 </section>
             </main>
 
-            <footer className="container mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-8 opacity-30 grayscale hover:opacity-100 transition-all">
-                <div className="flex items-center gap-2 font-black text-xl tracking-tighter">
-                    <Wallet className="size-5 text-primary" /> BolsoVerde
-                </div>
-                <div className="flex gap-12 text-[10px] font-black uppercase tracking-widest">
-                    <Link to="#" className="hover:text-primary transition-colors">Politica de Privacidade</Link>
-                    <Link to="#" className="hover:text-primary transition-colors">Termos de Uso</Link>
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-widest">© 2026 BolsoVerde. Powered by Harpia IA.</p>
-            </footer>
+            <Footer />
         </div>
     )
 }
