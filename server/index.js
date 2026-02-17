@@ -26,6 +26,25 @@ app.post('/api/send-feedback', async (req, res) => {
     console.log(`[${new Date().toISOString()}] Recebendo feedback de: ${name} (${email}) | Screenshot: ${screenshot ? 'SIM (' + Math.round(screenshot.length / 1024) + 'KB)' : 'NÃO'}`);
 
     try {
+        // Validar e preparar o screenshot
+        let attachments = [];
+        if (screenshot) {
+            // Remove o prefixo data:image/jpeg;base64, se existir
+            const base64Content = screenshot.includes(',') ? screenshot.split(',')[1] : screenshot;
+
+            if (base64Content) {
+                console.log(`[${new Date().toISOString()}] Processando screenshot: ${base64Content.substring(0, 50)}... (Total: ${base64Content.length} chars)`);
+                attachments.push({
+                    filename: 'screenshot.jpg',
+                    content: base64Content,
+                    content_id: 'screenshot',
+                    disposition: 'inline'
+                });
+            } else {
+                console.warn(`[${new Date().toISOString()}] Screenshot recebido mas formato inválido`);
+            }
+        }
+
         const { data, error } = await resend.emails.send({
             from: 'BolsoVerde <noreply@harpia.digital>',
             to: ['lukas@harpia.digital'],
@@ -75,13 +94,7 @@ app.post('/api/send-feedback', async (req, res) => {
             </div>
         </div>
       `,
-            attachments: screenshot ? [
-                {
-                    filename: 'screenshot.jpg',
-                    content: screenshot.split(',')[1],
-                    content_id: 'screenshot',
-                }
-            ] : []
+            attachments: attachments
         });
 
         if (error) {
