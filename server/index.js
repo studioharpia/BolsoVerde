@@ -23,7 +23,7 @@ app.get('/health', (req, res) => {
 
 app.post('/api/send-feedback', async (req, res) => {
     const { name, phone, email, message, screenshot } = req.body;
-    console.log(`[${new Date().toISOString()}] Recebendo feedback de: ${name} (${email})`);
+    console.log(`[${new Date().toISOString()}] Recebendo feedback de: ${name} (${email}) | Screenshot: ${screenshot ? 'SIM (' + Math.round(screenshot.length / 1024) + 'KB)' : 'NÃO'}`);
 
     try {
         const { data, error } = await resend.emails.send({
@@ -61,7 +61,7 @@ app.post('/api/send-feedback', async (req, res) => {
                     ${screenshot ? `
                     <div style="margin-top: 40px; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden;">
                         <p style="background: #f8fafc; padding: 12px 20px; margin: 0; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #71717a; border-bottom: 1px solid #e2e8f0;">Print da Tela</p>
-                        <img src="${screenshot}" style="width: 100%; display: block;" />
+                        <img src="cid:screenshot" style="width: 100%; display: block;" />
                     </div>
                     ` : ''}
                 </div>
@@ -79,6 +79,7 @@ app.post('/api/send-feedback', async (req, res) => {
                 {
                     filename: 'screenshot.jpg',
                     content: screenshot.split(',')[1],
+                    content_id: 'screenshot',
                 }
             ] : []
         });
