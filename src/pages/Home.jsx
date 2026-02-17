@@ -16,18 +16,30 @@ export default function Home() {
                     <button
                         onClick={() => {
                             import('canvas-confetti').then(confetti => {
-                                confetti.default({
-                                    particleCount: 150,
-                                    spread: 70,
-                                    origin: { y: 0.6 },
-                                    colors: ['#3b82f6', '#8b5cf6', '#f97316', '#10b981']
-                                });
+                                const duration = 3 * 1000;
+                                const animationEnd = Date.now() + duration;
+                                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+                                const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+                                const interval = setInterval(function () {
+                                    const timeLeft = animationEnd - Date.now();
+
+                                    if (timeLeft <= 0) {
+                                        return clearInterval(interval);
+                                    }
+
+                                    const particleCount = 50 * (timeLeft / duration);
+                                    confetti.default({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+                                    confetti.default({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+                                }, 250);
                             });
-                            const audio = new Audio('https://www.soundjay.com/human/sounds/applause-01.mp3');
-                            audio.volume = 0.5;
-                            audio.play();
+                            // Som de palmas (URL mais estável)
+                            const audio = new Audio('https://actions.google.com/sounds/v1/crowds/crowd_applause.ogg');
+                            audio.volume = 0.6;
+                            audio.play().catch(e => console.error("Erro ao tocar áudio:", e));
                         }}
-                        className="mt-6 px-6 py-3 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary hover:text-primary-foreground transition-all flex items-center gap-2 group active:scale-95"
+                        className="mt-6 px-6 py-3 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary hover:text-primary-foreground transition-all flex items-center gap-2 group active:scale-95 shadow-lg shadow-primary/10"
                     >
                         <Zap className="size-4 fill-current group-hover:animate-bounce" />
                         Celebrar Lançamento
