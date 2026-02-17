@@ -37,8 +37,7 @@ app.post('/api/send-feedback', async (req, res) => {
                 attachments.push({
                     filename: 'screenshot.jpg',
                     content: base64Content,
-                    content_id: 'screenshot',
-                    disposition: 'inline'
+                    content_id: 'screenshot'
                 });
             } else {
                 console.warn(`[${new Date().toISOString()}] Screenshot recebido mas formato inválido`);
@@ -76,13 +75,6 @@ app.post('/api/send-feedback', async (req, res) => {
                             "${message}"
                         </div>
                     </div>
-
-                    ${screenshot ? `
-                    <div style="margin-top: 40px; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden;">
-                        <p style="background: #f8fafc; padding: 12px 20px; margin: 0; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #71717a; border-bottom: 1px solid #e2e8f0;">Print da Tela</p>
-                        <img src="cid:screenshot" style="width: 100%; display: block;" />
-                    </div>
-                    ` : ''}
                 </div>
                 
                 <!-- Footer -->
