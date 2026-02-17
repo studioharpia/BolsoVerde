@@ -130,7 +130,7 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
 
         } catch (error) {
             console.error('Erro ao enviar feedback:', error)
-            alert('Não foi possível enviar o feedback agora. Verifique se o servidor de e-mail está rodando.')
+            alert(`Não foi possível enviar o feedback.\n\nDetalhe técnico: ${error.message}\n\nVerifique se o servidor na pasta 'server' está rodando (npm run dev).`)
         } finally {
             setIsSubmitting(false)
         }
