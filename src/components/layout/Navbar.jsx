@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import html2canvas from 'html2canvas'
+import { toJpeg } from 'html-to-image'
 import { Wallet, ArrowLeft, MessageSquarePlus } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { FeedbackModal } from '../modals/FeedbackModal'
@@ -8,17 +8,21 @@ import { FeedbackModal } from '../modals/FeedbackModal'
 export const Navbar = () => {
     const location = useLocation()
     const isHome = location.pathname === '/'
+    const isUpdates = location.pathname === '/updates'
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [screenshot, setScreenshot] = useState(null)
 
     const handleFeedbackClick = useCallback(async () => {
         try {
-            const canvas = await html2canvas(document.body, {
-                scale: 0.5,
-                logging: false,
-                useCORS: true
+            // Pequeno delay para garantir renderização
+            await new Promise(r => setTimeout(r, 100))
+
+            const dataUrl = await toJpeg(document.body, {
+                quality: 0.8,
+                pixelRatio: 1,
+                skipAutoScale: true
             })
-            setScreenshot(canvas.toDataURL('image/jpeg', 0.8))
+            setScreenshot(dataUrl)
         } catch (err) {
             console.error('Erro ao capturar tela:', err)
             setScreenshot(null)
