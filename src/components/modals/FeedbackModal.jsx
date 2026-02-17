@@ -101,6 +101,8 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
             return
         }
 
+        setIsSubmitting(true)
+
         try {
             const api_url = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
@@ -128,7 +130,7 @@ export const FeedbackModal = ({ open, onOpenChange }) => {
 
         } catch (error) {
             console.error('Erro ao enviar feedback:', error)
-            // Aqui poderíamos setar um erro global se necessário
+            alert('Não foi possível enviar o feedback agora. Verifique se o servidor de e-mail está rodando.')
         } finally {
             setIsSubmitting(false)
         }
