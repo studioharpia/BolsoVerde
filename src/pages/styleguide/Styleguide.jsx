@@ -18,21 +18,20 @@ export default function Styleguide() {
         { name: 'background', var: '--background' },
         { name: 'foreground', var: '--foreground' },
         { name: 'card', var: '--card' },
-        { name: 'primary', var: '--primary' },
+        { name: 'card foreground', var: '--card-foreground' },
+        { name: 'primary (emerald)', var: '--primary' },
         { name: 'secondary', var: '--secondary' },
         { name: 'muted', var: '--muted' },
         { name: 'border', var: '--border' },
-        { name: 'accent', var: '--accent' },
     ]
 
     const semantics = [
         { name: 'success', var: '--success' },
-        { name: 'success (muted)', var: '--success-muted' },
         { name: 'warning', var: '--warning' },
-        { name: 'warning (muted)', var: '--warning-muted' },
-        { name: 'destructive', var: '--destructive' },
-        { name: 'destructive (muted)', var: '--destructive-muted' },
         { name: 'info', var: '--info' },
+        { name: 'destructive', var: '--destructive' },
+        { name: 'success (muted)', var: '--success-muted' },
+        { name: 'warning (muted)', var: '--warning-muted' },
         { name: 'info (muted)', var: '--info-muted' },
     ]
 

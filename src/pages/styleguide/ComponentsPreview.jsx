@@ -1149,7 +1149,7 @@ export default function ComponentsPreview() {
                                     <TabsTrigger value="settings">Settings</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="overview">
-                                    <div className="p-6 border border-border rounded-xl bg-card shadow-sm space-y-4">
+                                    <div className="py-6 space-y-4">
                                         <h3 className="text-lg font-bold">Overview</h3>
                                         <p className="text-sm text-muted-foreground leading-relaxed">
                                             View your key metrics and recent project activity. Track progress across all your active projects.
@@ -1160,7 +1160,7 @@ export default function ComponentsPreview() {
                                     </div>
                                 </TabsContent>
                                 <TabsContent value="analytics">
-                                    <div className="p-6 border border-border rounded-xl bg-card shadow-sm">
+                                    <div className="py-6">
                                         <Skeleton className="h-[200px] rounded-lg" />
                                     </div>
                                 </TabsContent>

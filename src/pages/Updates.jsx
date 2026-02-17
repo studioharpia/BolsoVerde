@@ -175,7 +175,7 @@ export default function Updates() {
                 {/* Footer */}
                 <div className="mt-32 pt-16 border-t border-border/50 text-center">
                     <p className="text-sm text-muted-foreground">
-                        Keystone Design System — Desenvolvido com Antigravity
+                        BolsoVerde — Calculadora de Gastos Inteligente
                     </p>
                 </div>
             </div>

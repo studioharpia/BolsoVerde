@@ -12,7 +12,7 @@ import { Button } from "./Button"
 import { Input } from "./Input"
 
 const Table = React.forwardRef(({ className, variant = "default", ...props }, ref) => (
-    <div className={cn("relative w-full overflow-auto", variant === "default" && "rounded-xl border border-border bg-card shadow-sm")}>
+    <div className={cn("relative w-full overflow-auto", variant === "default" && "rounded-xl border border-border")}>
         <table
             ref={ref}
             className={cn("w-full caption-bottom text-sm", className)}
@@ -23,14 +23,14 @@ const Table = React.forwardRef(({ className, variant = "default", ...props }, re
 Table.displayName = "Table"
 
 const TableHeader = React.forwardRef(({ className, ...props }, ref) => (
-    <thead ref={ref} className={cn("[&_tr]:border-b border-border", className)} {...props} />
+    <thead ref={ref} className={cn("bg-primary text-primary-foreground", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
 const TableBody = React.forwardRef(({ className, ...props }, ref) => (
     <tbody
         ref={ref}
-        className={cn("[&_tr:last-child]:border-0", className)}
+        className={cn("[&_tr:last-child]:border-0 bg-secondary/50", className)}
         {...props}
     />
 ))
@@ -64,7 +64,7 @@ const TableHead = React.forwardRef(({ className, ...props }, ref) => (
     <th
         ref={ref}
         className={cn(
-            "h-10 px-5 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+            "h-10 px-5 text-left align-middle font-semibold text-primary-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
             className
         )}
         {...props}
@@ -142,7 +142,7 @@ export function DataTable({
                     />
                 </div>
             )}
-            <div className={cn(variant === "default" && "rounded-xl border border-border bg-card overflow-hidden shadow-sm")}>
+            <div className={cn(variant === "default" && "rounded-xl overflow-hidden border border-border")}>
                 <Table variant={variant}>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

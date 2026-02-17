@@ -18,7 +18,7 @@ export default function Style() {
                         <div className="size-12 rounded-lg bg-muted border border-border" title="Muted Background" />
                     </div>
                     <p className="text-muted-foreground mt-4 italic">
-                        "Onde a função encontra a forma de maneira invisível."
+                        &quot;Onde a função encontra a forma de maneira invisível.&quot;
                     </p>
                 </div>
             </section>
