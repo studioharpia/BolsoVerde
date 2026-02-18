@@ -337,24 +337,29 @@ export default function Home() {
                             </CardHeader>
                             <CardContent className="px-8 pb-8">
                                 {/* Header da tabela */}
-                                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 border-b border-border">
+                                <div className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto_auto] gap-4 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 border-b border-border">
                                     <span>Descrição</span>
-                                    <span className="w-24 text-center">Categoria</span>
-                                    <span className="w-24 text-center">Data</span>
+                                    <span className="w-24 text-center hidden md:block">Categoria</span>
+                                    <span className="w-24 text-center hidden md:block">Data</span>
                                     <span className="w-28 text-right">Valor</span>
                                 </div>
                                 <div className="divide-y divide-border/50 max-h-[500px] overflow-y-auto">
                                     {dashboardData.transactions.map((t, i) => (
-                                        <div key={i} className="grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center px-4 py-3 hover:bg-secondary/20 transition-colors">
-                                            <span className="text-sm font-bold text-foreground truncate" title={t.description}>
-                                                {t.description}
-                                            </span>
-                                            <span className="w-24 text-center">
+                                        <div key={i} className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto_auto] gap-4 items-center px-4 py-3 hover:bg-secondary/20 transition-colors">
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-sm font-bold text-foreground truncate" title={t.description}>
+                                                    {t.description}
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground md:hidden font-medium">
+                                                    {t.date} • {t.category}
+                                                </span>
+                                            </div>
+                                            <span className="w-24 text-center hidden md:block">
                                                 <Badge variant="outline" className="text-[10px] font-bold rounded-full px-2 py-0.5">
                                                     {t.category}
                                                 </Badge>
                                             </span>
-                                            <span className="w-24 text-center text-xs text-muted-foreground font-medium">
+                                            <span className="w-24 text-center text-xs text-muted-foreground font-medium hidden md:block">
                                                 {t.date}
                                             </span>
                                             <span className={`w-28 text-right text-sm font-black flex items-center justify-end gap-1 ${t.amount < 0 ? 'text-red-500' : 'text-primary'}`}>

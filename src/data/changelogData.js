@@ -15,6 +15,37 @@
 export const changelogEntries = [
     {
         date: "2026-02-17",
+        title: "Parser Universal de Extratos",
+        type: "feature",
+        items: [
+            { category: "Funcionalidade", text: "Novo sistema de detecção inteligente que ignora cabeçalhos e metadados de bancos (ex: Banco Inter)." },
+            { category: "Robustez", text: "Mapeamento automático de colunas com suporte a nomes variados, acentos e caracteres especiais." },
+            { category: "Compatibilidade", text: "Suporte nativo para delimitadores de ponto-e-vírgula e formatos de valores brasileiros/internacionais." },
+        ],
+    },
+    {
+        date: "2026-02-17",
+        title: "Páginas Legais e Transparência",
+        type: "feature",
+        items: [
+            { category: "Funcionalidade", text: "Novas páginas de Política de Privacidade e Termos de Uso criadas." },
+            { category: "Segurança", text: "Textos focados em transparência, deixando claro que não armazenamos dados nos servidores." },
+            { category: "Privacidade", text: "Novo sistema de consentimento de cookies personalizado (Cookie Consent)." },
+            { category: "Design", text: "Layout das páginas legais seguindo o padrão premium do BolsoVerde." },
+        ],
+    },
+    {
+        date: "2026-02-17",
+        title: "Correção de Responsividade no Extrato",
+        type: "fix",
+        items: [
+            { category: "UX", text: "Tabela de extrato agora é 100% responsiva — colunas se ajustam e escondem inteligentemente no mobile." },
+            { category: "Interface", text: "Informações de data e categoria agora aparecem abaixo da descrição em telas pequenas." },
+            { category: "Design", text: "Melhoria no truncamento de textos longos para evitar quebras de layout." },
+        ],
+    },
+    {
+        date: "2026-02-17",
         title: "Deploy Fullstack e UI Mobile",
         type: "improvement",
         items: [

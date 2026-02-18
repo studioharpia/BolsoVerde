@@ -8,7 +8,6 @@ import { FeedbackModal } from '../modals/FeedbackModal'
 export const Navbar = () => {
     const location = useLocation()
     const isHome = location.pathname === '/'
-    const isUpdates = location.pathname === '/updates'
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [screenshot, setScreenshot] = useState(null)
 

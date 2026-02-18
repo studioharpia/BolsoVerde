@@ -11,8 +11,8 @@ export const Footer = () => {
                 BolsoVerde
             </div>
             <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">
-                <Link to="#" className="hover:text-primary transition-colors">Política de Privacidade</Link>
-                <Link to="#" className="hover:text-primary transition-colors">Termos de Uso</Link>
+                <Link to="/privacy" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+                <Link to="/terms" className="hover:text-primary transition-colors">Termos de Uso</Link>
                 <Link to="#" className="hover:text-primary transition-colors">Contato</Link>
             </div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">© 2026 BolsoVerde. Powered by Harpia IA.</p>

@@ -62,6 +62,15 @@ const CATEGORY_RULES = [
             'LIVRARIA', 'SARAIVA', 'CULTURA',
         ],
     },
+    {
+        name: 'Investimentos',
+        keywords: [
+            'CDB ', 'TESOURO', 'ACOES', 'AÇÕES', 'FUNDOS', 'FII ',
+            'APLICACAO', 'APLICAÇÃO', 'RESGATE', 'POUPANCA', 'POUPANÇA',
+            'INTER DTVM', 'INVEST ', 'NUINVEST', 'BTG PACTUAL', 'XP INC',
+            'CORRETORA', 'SELIC', 'CDI ', 'PORQ OBJ', 'RENDIMENTO',
+        ],
+    },
 
     // ── PRIORIDADE MÉDIA: Categorias bem definidas ──
     {
@@ -82,6 +91,7 @@ const CATEGORY_RULES = [
             'IFOOD', 'RAPPI', 'JAMES', 'ZE DELIVERY', 'ZÉ DELIVERY',
             'MC DONALDS', 'MCDONALD', 'BURGER KING', 'BK ', 'OUTBACK',
             'SUBWAY', 'KFC', 'POPEYES', 'HABIB', 'GIRAFFAS', 'MADERO',
+            'ARCOS DORADOS', 'ARCOS DOURADOS',
             'RESTAURANTE', 'LANCHONETE', 'PIZZARIA', 'PIZZA', 'SUSHI',
             'PADARIA', 'CONFEITARIA', 'CAFE ', 'CAFETERIA', 'STARBUCKS',
             'SUPERMERCADO', 'MERCADO', 'CARREFOUR', 'EXTRA', 'PAO DE ACUCAR',
@@ -111,7 +121,7 @@ const CATEGORY_RULES = [
             'SHOPEE', 'SHEIN', 'TEMU', 'ALIEXPRESS', 'WISH',
             'AMAZON', 'KABUM', 'PICHAU', 'TERABYTE',
             'RENNER', 'RIACHUELO', 'ZARA', 'C&A', 'HERING',
-            'LOJAS AMERICANAS', 'CASAS BAHIA', 'PONTO FRIO',
+            'LOJAS AMERICANAS', 'CASAS BAHIA', 'PONTO FRIO', 'MARKETPLACE',
             'CENTAURO', 'NETSHOES', 'NIKE', 'ADIDAS', 'DECATHLON',
             'BOTICARIO', 'BOTICÁRIO', 'NATURA', 'AVON', 'SEPHORA',
             'LEROY MERLIN', 'TELHA NORTE', 'DICICO', 'OBRAMAX',
@@ -146,13 +156,18 @@ const CATEGORY_RULES = [
             'BAR ', 'CERVEJA', 'CHOPP', 'PUB ', 'BALADA', 'DANCETERIA',
         ],
     },
-
-    // ── CELULAR: Separado de Moradia (internet fixa) ──
     {
         name: 'Telefonia',
         keywords: [
             'VIVO', 'CLARO', 'TIM ', 'OI ', 'CELULAR',
             'RECARGA CELULAR', 'RECARGA TIM', 'RECARGA VIVO', 'RECARGA CLARO',
+        ],
+    },
+    {
+        name: 'Transferências',
+        keywords: [
+            'PIX ', 'TRANSFERENCIA', 'TRANSF ', 'TED ', 'DOC ',
+            'PAGAMENTO EFETUADO', 'PAGAMENTO RECEBIDO', 'ESTORNO',
         ],
     },
 ]
@@ -164,6 +179,7 @@ export const CATEGORY_COLORS = {
     'Moradia': '#06b6d4', // Cyan
     'Saúde': '#ef4444', // Red
     'Educação': '#f59e0b', // Amber
+    'Investimentos': '#84cc16', // Lime (Greenish)
     'Transporte': '#3b82f6', // Blue
     'Alimentação': '#10b981', // Emerald
     'Assinaturas': '#8b5cf6', // Violet
@@ -172,7 +188,8 @@ export const CATEGORY_COLORS = {
     'Pets': '#a3e635', // Lime
     'Lazer': '#14b8a6', // Teal
     'Telefonia': '#6366f1', // Indigo
-    'Outros': '#94a3b8', // Slate
+    'Transferências': '#94a3b8', // Slate
+    'Outros': '#475569', // Dark Slate
 }
 
 /**

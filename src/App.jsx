@@ -15,31 +15,39 @@ import Security from './pages/docs/Security'
 import Status from './pages/Status'
 
 import Skills from './pages/Skills'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
+import { CookieConsent } from './components/layout/CookieConsent'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/updates" element={<Updates />} />
-      <Route path="/status" element={<Status />} />
-      <Route path="/skills" element={<Skills />} />
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/updates" element={<Updates />} />
+        <Route path="/status" element={<Status />} />
+        <Route path="/skills" element={<Skills />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
 
-      {/* Documentation Routes */}
-      <Route path="/docs" element={<DocsLayout />}>
-        <Route index element={<Introduction />} />
-        <Route path="persona" element={<Persona />} />
-        <Route path="marketing" element={<Marketing />} />
-        <Route path="style" element={<Style />} />
-        <Route path="security" element={<Security />} />
-      </Route>
+        {/* Documentation Routes */}
+        <Route path="/docs" element={<DocsLayout />}>
+          <Route index element={<Introduction />} />
+          <Route path="persona" element={<Persona />} />
+          <Route path="marketing" element={<Marketing />} />
+          <Route path="style" element={<Style />} />
+          <Route path="security" element={<Security />} />
+        </Route>
 
-      <Route path="/styleguide" element={<StyleguideLayout />}>
-        <Route index element={<Styleguide />} />
-        <Route path="components/:name" element={<ComponentsPreview />} />
-      </Route>
+        <Route path="/styleguide" element={<StyleguideLayout />}>
+          <Route index element={<Styleguide />} />
+          <Route path="components/:name" element={<ComponentsPreview />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <CookieConsent />
+    </>
   )
 }
 
